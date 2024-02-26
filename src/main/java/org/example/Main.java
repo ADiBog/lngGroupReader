@@ -15,17 +15,31 @@ public class Main {
 
         long startTime = System.nanoTime();
 
-        Map<String, Integer> groups = getStringIntegerMap(inputFilePath);
+        Map<String, List<String>> groups = getStringListMap(inputFilePath);
+
+        List<Map.Entry<String, List<String>>> groupList = new ArrayList<>(groups.entrySet());
+        groupList.sort((e1, e2) -> Integer.compare(e2.getValue().size(), e1.getValue().size()));
 
         int groupCount = 0;
-        for (int count : groups.values()) {
-            if (count > 1) {
+        for (Map.Entry<String, List<String>> entry : groupList) {
+            if (entry.getValue().size() > 1) {
                 groupCount++;
             }
         }
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputFilePath))) {
             writer.println("Number of groups with more than one element: " + groupCount);
+            int groupId = 1;
+            for (Map.Entry<String, List<String>> entry : groupList) {
+                if (entry.getValue().size() > 1) {
+                    writer.println("Group " + groupId);
+                    for (String line : entry.getValue()) {
+                        writer.println(line);
+                    }
+                    writer.println();
+                    groupId++;
+                }
+            }
         }
 
         long endTime = System.nanoTime();
@@ -34,8 +48,8 @@ public class Main {
         System.out.println("Execution time: " + duration + " ms");
     }
 
-    private static Map<String, Integer> getStringIntegerMap(String filePath) throws IOException {
-        Map<String, Integer> groups = new LinkedHashMap<>();
+    private static Map<String, List<String>> getStringListMap(String filePath) throws IOException {
+        Map<String, List<String>> groups = new LinkedHashMap<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -43,7 +57,7 @@ public class Main {
                 String[] parts = line.split(";");
                 for (String part : parts) {
                     if (!part.isEmpty()) {
-                        groups.put(part, groups.getOrDefault(part, 0) + 1);
+                        groups.computeIfAbsent(part, k -> new ArrayList<>()).add(line);
                     }
                 }
             }
