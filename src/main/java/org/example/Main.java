@@ -11,7 +11,7 @@ public class Main {
         }
 
         String inputFilePath = args[0];
-        String outputFilePath = "C:\\Users\\astonuser.MSI\\Downloads\\result.txt"; // указываем путь к файлу для записи
+        String outputFilePath = "result.txt"; // указываем путь к файлу для записи
 
         long startTime = System.nanoTime();
 
